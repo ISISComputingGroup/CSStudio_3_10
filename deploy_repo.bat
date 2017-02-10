@@ -1,6 +1,6 @@
 @echo off
-set SRC_DIR=%CD%\CSStudio_P2
-set DEST_DIR=c:\Installers\CSStudio_P2\
+set SRC_DIR=%CD%\CSStudio_P2_3_3_10\
+set DEST_DIR=c:\Installers\CSStudio_P2_3_3_10\
 
 REM override defaults
 if NOT "%~1" == "" (
