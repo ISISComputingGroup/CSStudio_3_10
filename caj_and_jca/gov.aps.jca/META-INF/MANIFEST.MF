@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jca
+Bundle-SymbolicName: gov.aps.jca
+Bundle-Version: 2.3.6.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: gov.aps.jca,
+ gov.aps.jca.cas,
+ gov.aps.jca.configuration,
+ gov.aps.jca.dbr,
+ gov.aps.jca.event

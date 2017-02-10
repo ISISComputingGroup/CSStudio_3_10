@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Caj
+Bundle-SymbolicName: com.cosylab.epics.caj
+Bundle-Version: 1.1.14.qualifier
+Bundle-Vendor: COSYLAB
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: gov.aps.jca;bundle-version="2.3.6"

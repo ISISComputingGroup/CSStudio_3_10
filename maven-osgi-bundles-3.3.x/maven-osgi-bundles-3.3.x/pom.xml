@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
+
+	<groupId>org.csstudio</groupId>
+	<artifactId>maven-osgi-bundles</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>maven-osgi-bundles</name>
+
+	<properties>
+		<tycho.version>0.20.0</tycho.version>
+		<manifest-location>META-INF</manifest-location>
+		<cs-studio-central.url>http://download.controlsystemstudio.org/maven-osgi-bundles/3.3</cs-studio-central.url>
+		<pvmanager.version>2.8.0</pvmanager.version>
+		<epics.util.version>0.3.2</epics.util.version>
+		<epics.caj.version>1.1.14</epics.caj.version>
+		<epics.jca.version>2.3.6</epics.jca.version>
+		<graphene.version>0.8.0</graphene.version>
+		<pvdata.version>3.0.3</pvdata.version>
+		<pvaccess.version>3.0.5</pvaccess.version>
+		<csstudio.version>3.3.0-SNAPSHOT</csstudio.version>
+	</properties>
+	
+	<dependencies>
+	<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>osgi</artifactId>
+			<version>3.7.2-v20120110-1415</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>jobs</artifactId>
+			<version>3.5.101-v20120113-1953</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>runtime</artifactId>
+			<version>3.7.0-v20110110</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>common</artifactId>
+			<version>3.6.0-v20110523</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>preferences</artifactId>
+			<version>3.4.2-v20120111-2020</version>
+			<scope>provided</scope>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.eclipse.equinox</groupId> -->
+<!-- 			<artifactId>registry</artifactId> -->
+<!-- 			<version>3.5.301-v20130717-1549</version> -->
+<!-- 			<scope>provided</scope> -->
+<!-- 		</dependency> -->
+	</dependencies>
+	
+	
+	<repositories>
+		<repository>
+			<id>epics</id>
+			<name>EPICS Repository</name>
+			<url>http://epics.sourceforge.net/maven2/</url>
+		</repository>
+		<repository>
+			<id>controlsystemstudio</id>
+			<name>CS-Studio Maven Repository</name>
+			<url>http://maven.controlsystemstudio.org/</url>
+		</repository>
+	</repositories>
+
+	<modules>
+		<module>epics</module>
+		<module>pvmanager</module>
+		<module>repository</module>
+	</modules>
+</project>
+
