@@ -1,5 +1,5 @@
-
-set LOCINSTALLDIR=%CD%\CSStudio_P2\
+@echo off
+set LOCINSTALLDIR=%CD%\CSStudio_P2_3_3_10\
 set MAVENDIR=%CD%\mvn_repo\
 
 REM If Jenkins need to set path
