@@ -60,5 +60,6 @@
   <modules>
   	<module>gov.aps.jca</module>
   	<module>com.cosylab.epics.caj</module>
+    <module>repository</module>
   </modules>
 </project>
