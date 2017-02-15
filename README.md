@@ -1,7 +1,7 @@
-# CSStudio_3_10
+# CSStudio_3_3
 
-A copy of CS-Studio 3.3.10 with the required build scripts to get it to build for IBEX.
-This was the last release of CS-Studio version 3.
+A copy of the CS-Studio branch 3.3.x with the required build scripts to get it to build for IBEX.
+This code was the last version of CS-Studio 3 and was released as 3.3.11.
 
 There is a build script for our custom version of CAJ 1.1.14 that allows loopback to be used.
 The change is in com\cosylab\epics\caj\impl\handlers\SearchResponse.java
