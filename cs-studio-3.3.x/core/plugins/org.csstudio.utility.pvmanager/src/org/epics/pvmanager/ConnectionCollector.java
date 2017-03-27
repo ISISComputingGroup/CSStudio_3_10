@@ -6,6 +6,9 @@ package org.epics.pvmanager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import uk.ac.stfc.isis.ibex.logger.IsisLog;
 
 /**
  * A specialized collector to handle multiple channels that can be added/removed
@@ -15,6 +18,9 @@ import java.util.Map;
  * @author carcassi
  */
 public class ConnectionCollector implements ReadFunction<Boolean> {
+
+    private static final Logger log = Logger.getLogger(ConnectionCollector.class.getName());
+    private static final org.apache.logging.log4j.Logger LOG = IsisLog.getLogger(ConnectionCollector.class);
 
     private final Object lock = new Object();
     private final Map<String, Boolean> channelConnected = new HashMap<>();
@@ -47,6 +53,7 @@ public class ConnectionCollector implements ReadFunction<Boolean> {
                 channelConnected.put(name, newValue);
                 connected = null;
                 task = notification;
+                LOG.info("Ticket2162: " + name + " - ConnectionCollector connect change" + newValue);
             }
             // Run task without holding the lock
             if (task != null) {

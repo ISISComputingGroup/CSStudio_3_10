@@ -14,23 +14,6 @@
 
 package com.cosylab.epics.caj;
 
-import gov.aps.jca.CAException;
-import gov.aps.jca.CAStatus;
-import gov.aps.jca.Channel;
-import gov.aps.jca.Context;
-import gov.aps.jca.Monitor;
-import gov.aps.jca.dbr.DBR;
-import gov.aps.jca.dbr.DBRFactory;
-import gov.aps.jca.dbr.DBRType;
-import gov.aps.jca.dbr.Severity;
-import gov.aps.jca.event.AccessRightsEvent;
-import gov.aps.jca.event.AccessRightsListener;
-import gov.aps.jca.event.ConnectionEvent;
-import gov.aps.jca.event.ConnectionListener;
-import gov.aps.jca.event.GetListener;
-import gov.aps.jca.event.MonitorListener;
-import gov.aps.jca.event.PutListener;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.ByteBuffer;
@@ -54,6 +37,24 @@ import com.cosylab.epics.caj.impl.requests.WriteNotifyRequest;
 import com.cosylab.epics.caj.impl.requests.WriteRequest;
 import com.cosylab.epics.caj.util.ArrayFIFO;
 
+import gov.aps.jca.CAException;
+import gov.aps.jca.CAStatus;
+import gov.aps.jca.Channel;
+import gov.aps.jca.Context;
+import gov.aps.jca.Monitor;
+import gov.aps.jca.dbr.DBR;
+import gov.aps.jca.dbr.DBRFactory;
+import gov.aps.jca.dbr.DBRType;
+import gov.aps.jca.dbr.Severity;
+import gov.aps.jca.event.AccessRightsEvent;
+import gov.aps.jca.event.AccessRightsListener;
+import gov.aps.jca.event.ConnectionEvent;
+import gov.aps.jca.event.ConnectionListener;
+import gov.aps.jca.event.GetListener;
+import gov.aps.jca.event.MonitorListener;
+import gov.aps.jca.event.PutListener;
+import uk.ac.stfc.isis.ibex.logger.IsisLog;
+
 /**
  * Implementation of CAJ JCA <code>Channel</code>.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
@@ -63,6 +64,7 @@ public class CAJChannel extends Channel implements TransportClient {
 	
 	// Get Logger
 	private static final Logger logger = Logger.getLogger(CAJChannel.class.getName());
+    private static final org.apache.logging.log4j.Logger LOG = IsisLog.getLogger(CAJChannel.class);
 	
 	/**
 	 * Client channel ID.
@@ -362,7 +364,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#destroy()
 	 */
-	public synchronized void destroy() throws CAException, IllegalStateException {
+	@Override
+    public synchronized void destroy() throws CAException, IllegalStateException {
 		destroy(false);
 	}
 
@@ -512,7 +515,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see com.cosylab.epics.caj.impl.TransportClient#transportClosed()
 	 */
-	public void transportClosed() {
+	@Override
+    public void transportClosed() {
 //System.err.println("CHANNEL transportClosed");
 		disconnect(true);
 	}
@@ -520,7 +524,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see com.cosylab.epics.caj.impl.TransportClient#transportChanged()
 	 */
-	public synchronized void transportChanged() {
+	@Override
+    public synchronized void transportChanged() {
 //System.err.println("CHANNEL transportChanged");
 		if (connectionState == ConnectionState.DISCONNECTED)
 			initiateSearch();
@@ -529,7 +534,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see com.cosylab.epics.caj.impl.TransportClient#transportResponsive(com.cosylab.epics.caj.impl.Transport)
 	 */
-	public synchronized void transportResponsive(Transport transport) {
+	@Override
+    public synchronized void transportResponsive(Transport transport) {
 //System.err.println("CHANNEL transportResponsive");
 		if (connectionState == ConnectionState.DISCONNECTED)
 		{
@@ -548,7 +554,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see com.cosylab.epics.caj.impl.TransportClient#transportUnresponsive()
 	 */
-	public synchronized void transportUnresponsive() {
+	@Override
+    public synchronized void transportUnresponsive() {
 //System.err.println("CHANNEL transportUnresponsive");
 		if (connectionState == ConnectionState.CONNECTED)
 		{
@@ -566,7 +573,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#getConnectionListeners()
 	 */
-	public ConnectionListener[] getConnectionListeners()
+	@Override
+    public ConnectionListener[] getConnectionListeners()
 		throws IllegalStateException {
 		synchronized (connectionListeners)
 		{
@@ -578,7 +586,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#addConnectionListener(gov.aps.jca.event.ConnectionListener)
 	 */
-	public void addConnectionListener(ConnectionListener l)
+	@Override
+    public void addConnectionListener(ConnectionListener l)
 		throws CAException, IllegalStateException {
 		checkNotClosedState();
 
@@ -611,7 +620,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#removeConnectionListener(gov.aps.jca.event.ConnectionListener)
 	 */
-	public void removeConnectionListener(ConnectionListener l)
+	@Override
+    public void removeConnectionListener(ConnectionListener l)
 		throws CAException, IllegalStateException {
 		checkNotClosedState();
 
@@ -630,6 +640,9 @@ public class CAJChannel extends Channel implements TransportClient {
 	 */
 	private synchronized void setConnectionState(ConnectionState connectionState)
 	{
+        System.out.println("HI!");
+        LOG.info("Ticket2162: " + name + " - CAJChannel connect change" + connectionState);
+        System.out.println("yo!");
 		if (this.connectionState != connectionState)
 		{
 			this.connectionState = connectionState;
@@ -652,7 +665,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#getAccessRightsListeners()
 	 */
-	public AccessRightsListener[] getAccessRightsListeners()
+	@Override
+    public AccessRightsListener[] getAccessRightsListeners()
 		throws IllegalStateException {
 		synchronized (accessRightsListeners)
 		{
@@ -664,7 +678,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#addAccessRightsListener(gov.aps.jca.event.AccessRightsListener)
 	 */
-	public void addAccessRightsListener(AccessRightsListener l)
+	@Override
+    public void addAccessRightsListener(AccessRightsListener l)
 		throws CAException, IllegalStateException {
 		checkNotClosedState();
 
@@ -681,7 +696,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#removeAccessRightsListener(gov.aps.jca.event.AccessRightsListener)
 	 */
-	public void removeAccessRightsListener(AccessRightsListener l)
+	@Override
+    public void removeAccessRightsListener(AccessRightsListener l)
 		throws CAException, IllegalStateException {
 		checkNotClosedState();
 
@@ -721,14 +737,16 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#getName()
 	 */
-	public String getName() throws IllegalStateException {
+	@Override
+    public String getName() throws IllegalStateException {
 		return name;
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#getFieldType()
 	 */
-	public synchronized DBRType getFieldType() throws IllegalStateException {
+	@Override
+    public synchronized DBRType getFieldType() throws IllegalStateException {
 		checkState();
 		return type;
 	}
@@ -736,7 +754,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#getElementCount()
 	 */
-	public synchronized int getElementCount() throws IllegalStateException {
+	@Override
+    public synchronized int getElementCount() throws IllegalStateException {
 		checkState();
 		return elementCount;
 	}
@@ -744,7 +763,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#getConnectionState()
 	 */
-	public synchronized ConnectionState getConnectionState() throws IllegalStateException {
+	@Override
+    public synchronized ConnectionState getConnectionState() throws IllegalStateException {
 		return connectionState;
 	}
 
@@ -752,7 +772,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	 * NOTE: synchronization guarantees that <code>transport</code> is non-<code>null</code> and <code>state == CONNECTED</code>.
 	 * @see gov.aps.jca.Channel#getHostName()
 	 */
-	public synchronized String getHostName() throws IllegalStateException {
+	@Override
+    public synchronized String getHostName() throws IllegalStateException {
 		connectionRequiredCheck();
 		return transport.getRemoteAddress().getHostName();
 	}
@@ -760,7 +781,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#getReadAccess()
 	 */
-	public synchronized boolean getReadAccess() throws IllegalStateException {
+	@Override
+    public synchronized boolean getReadAccess() throws IllegalStateException {
 		checkState();
 		return (accessRights & CAConstants.CA_PROTO_ACCESS_RIGHT_READ) != 0;
 	}
@@ -768,7 +790,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#getWriteAccess()
 	 */
-	public synchronized boolean getWriteAccess() throws IllegalStateException {
+	@Override
+    public synchronized boolean getWriteAccess() throws IllegalStateException {
 		checkState();
 		return (accessRights & CAConstants.CA_PROTO_ACCESS_RIGHT_WRITE) != 0;
 	}
@@ -776,14 +799,16 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#put(byte[])
 	 */
-	public void put(byte[] value) throws CAException, IllegalStateException {
+	@Override
+    public void put(byte[] value) throws CAException, IllegalStateException {
 		put(DBRType.BYTE, value.length, value);
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#put(byte[], gov.aps.jca.event.PutListener)
 	 */
-	public void put(byte[] value, PutListener l)
+	@Override
+    public void put(byte[] value, PutListener l)
 		throws CAException, IllegalStateException {
 		put(DBRType.BYTE, value.length, value, l);
 	}
@@ -791,14 +816,16 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#put(short[])
 	 */
-	public void put(short[] value) throws CAException, IllegalStateException {
+	@Override
+    public void put(short[] value) throws CAException, IllegalStateException {
 		put(DBRType.SHORT, value.length, value);
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#put(short[], gov.aps.jca.event.PutListener)
 	 */
-	public void put(short[] value, PutListener l)
+	@Override
+    public void put(short[] value, PutListener l)
 		throws CAException, IllegalStateException {
 		put(DBRType.SHORT, value.length, value, l);
 	}
@@ -806,14 +833,16 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#put(int[])
 	 */
-	public void put(int[] value) throws CAException, IllegalStateException {
+	@Override
+    public void put(int[] value) throws CAException, IllegalStateException {
 		put(DBRType.INT, value.length, value);
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#put(int[], gov.aps.jca.event.PutListener)
 	 */
-	public void put(int[] value, PutListener l)
+	@Override
+    public void put(int[] value, PutListener l)
 		throws CAException, IllegalStateException {
 			put(DBRType.INT, value.length, value, l);
 	}
@@ -821,14 +850,16 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#put(float[])
 	 */
-	public void put(float[] value) throws CAException, IllegalStateException {
+	@Override
+    public void put(float[] value) throws CAException, IllegalStateException {
 		put(DBRType.FLOAT, value.length, value);
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#put(float[], gov.aps.jca.event.PutListener)
 	 */
-	public void put(float[] value, PutListener l)
+	@Override
+    public void put(float[] value, PutListener l)
 		throws CAException, IllegalStateException {
 		put(DBRType.FLOAT, value.length, value, l);
 	}
@@ -836,14 +867,16 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#put(double[])
 	 */
-	public void put(double[] value) throws CAException, IllegalStateException {
+	@Override
+    public void put(double[] value) throws CAException, IllegalStateException {
 		put(DBRType.DOUBLE, value.length, value);
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#put(double[], gov.aps.jca.event.PutListener)
 	 */
-	public void put(double[] value, PutListener l)
+	@Override
+    public void put(double[] value, PutListener l)
 		throws CAException, IllegalStateException {
 		put(DBRType.DOUBLE, value.length, value, l);
 	}
@@ -851,14 +884,16 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#put(java.lang.String[])
 	 */
-	public void put(String[] value) throws CAException, IllegalStateException {
+	@Override
+    public void put(String[] value) throws CAException, IllegalStateException {
 		put(DBRType.STRING, value.length, value);
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#put(java.lang.String[], gov.aps.jca.event.PutListener)
 	 */
-	public void put(String[] value, PutListener l)
+	@Override
+    public void put(String[] value, PutListener l)
 		throws CAException, IllegalStateException {
 		put(DBRType.STRING, value.length, value, l);
 	}
@@ -866,7 +901,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#putACKS(gov.aps.jca.dbr.Severity, gov.aps.jca.event.PutListener)
 	 */
-	public void putACKS(Severity severity, PutListener l)
+	@Override
+    public void putACKS(Severity severity, PutListener l)
 		throws CAException, IllegalStateException {
 		put(DBRType.PUT_ACKS, 1, new short[] { (short)severity.getValue()}, l);
 	}
@@ -874,28 +910,32 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#putACKS(gov.aps.jca.dbr.Severity)
 	 */
-	public void putACKS(Severity severity) throws CAException, IllegalStateException {
+	@Override
+    public void putACKS(Severity severity) throws CAException, IllegalStateException {
 		put(DBRType.PUT_ACKS, 1, new short[] { (short)severity.getValue()} );
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#putACKT(boolean, gov.aps.jca.event.PutListener)
 	 */
-	public void putACKT(boolean value, PutListener l) throws CAException, IllegalStateException {
+	@Override
+    public void putACKT(boolean value, PutListener l) throws CAException, IllegalStateException {
 		put(DBRType.PUT_ACKT, 1, new short[] { value ? (short)1 : (short)0 }, l);
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#putACKT(boolean)
 	 */
-	public void putACKT(boolean value) throws CAException, IllegalStateException {
+	@Override
+    public void putACKT(boolean value) throws CAException, IllegalStateException {
 		put(DBRType.PUT_ACKT, 1, new short[] { value ? (short)1 : (short)0 });
 	}
 
 	/**
 	 * @see gov.aps.jca.Channel#get(gov.aps.jca.dbr.DBRType, int)
 	 */
-	public DBR get(DBRType type, int count)
+	@Override
+    public DBR get(DBRType type, int count)
 		throws CAException, IllegalStateException {
 		connectionRequiredCheck();
 
@@ -948,7 +988,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#get(gov.aps.jca.dbr.DBRType, int, gov.aps.jca.event.GetListener)
 	 */
-	public void get(DBRType type, int count, GetListener l)
+	@Override
+    public void get(DBRType type, int count, GetListener l)
 		throws CAException, IllegalStateException {
 		connectionRequiredCheck();
 
@@ -1041,7 +1082,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#addMonitor(gov.aps.jca.dbr.DBRType, int, int, gov.aps.jca.event.MonitorListener)
 	 */
-	public synchronized Monitor addMonitor(
+	@Override
+    public synchronized Monitor addMonitor(
 		DBRType type,
 		int count,
 		int mask,
@@ -1065,7 +1107,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#getContext()
 	 */
-	public Context getContext() throws IllegalStateException {
+	@Override
+    public Context getContext() throws IllegalStateException {
 		return context;
 	}
 
@@ -1103,7 +1146,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/**
 	 * @see gov.aps.jca.Channel#printInfo(java.io.PrintStream)
 	 */
-	public synchronized void printInfo(PrintStream out) throws IllegalStateException {
+	@Override
+    public synchronized void printInfo(PrintStream out) throws IllegalStateException {
 		if (connectionState != ConnectionState.CONNECTED)
 		{
 			out.println("CHANNEL  : " + name);
@@ -1376,7 +1420,8 @@ public class CAJChannel extends Channel implements TransportClient {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString()
+	@Override
+    public String toString()
 	{
 		return getClass().getSimpleName() + " = { name = " + name + ", connectionState = " + connectionState.getName() + " }";
 	}

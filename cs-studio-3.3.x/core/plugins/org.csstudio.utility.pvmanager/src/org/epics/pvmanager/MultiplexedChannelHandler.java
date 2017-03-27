@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import uk.ac.stfc.isis.ibex.logger.IsisLog;
+
 /**
  * Implements a {@link ChannelHandler} on top of a single subscription and
  * multiplexes all reads on top of it.
@@ -43,6 +45,7 @@ import java.util.logging.Logger;
 public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayload> extends ChannelHandler {
     
     private static final Logger log = Logger.getLogger(MultiplexedChannelHandler.class.getName());
+    private static final org.apache.logging.log4j.Logger LOG = IsisLog.getLogger(MultiplexedChannelHandler.class);
     private int readUsageCounter = 0;
     private int writeUsageCounter = 0;
     private boolean connected = false;
@@ -159,6 +162,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
             log.log(Level.FINEST, "processConnection for channel {0} connectionPayload {1}", new Object[] {getChannelName(), connectionPayload});
         }
         
+        LOG.info("Ticket2162: " + getChannelName() + " - MultiplexChannelHandler connect change" + connectionPayload);
         this.connectionPayload = connectionPayload;
         setConnected(isConnected(connectionPayload));
         setWriteConnected(isWriteConnected(connectionPayload));
@@ -211,7 +215,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
      */
     @SuppressWarnings("unchecked")
     protected DataSourceTypeAdapter<ConnectionPayload, MessagePayload> findTypeAdapter(ValueCache<?> cache, ConnectionPayload connection) {
-        return (DataSourceTypeAdapter<ConnectionPayload, MessagePayload>) (DataSourceTypeAdapter) defaultTypeAdapter;
+        return (DataSourceTypeAdapter) defaultTypeAdapter;
     }
     
     /**

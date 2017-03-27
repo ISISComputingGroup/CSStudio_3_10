@@ -8,4 +8,6 @@ Export-Package: gov.aps.jca,
  gov.aps.jca.cas,
  gov.aps.jca.configuration,
  gov.aps.jca.dbr,
- gov.aps.jca.event
+ gov.aps.jca.event,
+ gov.aps.jca.jni
+Require-Bundle: uk.ac.stfc.isis.ibex.logger;bundle-version="1.0.0";visibility:=reexport

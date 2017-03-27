@@ -10,12 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.epics.pvmanager.expression.DesiredRateExpression;
 import org.epics.util.time.TimeDuration;
+
+import uk.ac.stfc.isis.ibex.logger.IsisLog;
 
 /**
  * Orchestrates the different elements of pvmanager to make a reader functional.
@@ -37,6 +39,7 @@ import org.epics.util.time.TimeDuration;
 public class PVDirector<T> {
     
     private static final Logger log = Logger.getLogger(PVDirector.class.getName());
+    private static final org.apache.logging.log4j.Logger LOG = IsisLog.getLogger(PVDirector.class);
 
     // Required for connection and exception notification
 
@@ -169,7 +172,8 @@ public class PVDirector<T> {
             recipe = readRecipies.remove(expression);
         }
         if (recipe == null) {
-            log.log(Level.SEVERE, "Director was asked to disconnect expression '" + expression + "' which was not found.");
+            LOG.info("Director was asked to disconnect expression '" + expression + "' which was not found.");
+
         }
         
         if (!recipe.getChannelReadRecipes().isEmpty()) {
@@ -266,8 +270,10 @@ public class PVDirector<T> {
         // Don't even calculate if notification is in flight.
         // This makes pvManager automatically throttle back if the consumer
         // is slower than the producer.
-        if (notificationInFlight)
+        if (notificationInFlight) {
+            LOG.info("Ticket2162: " + "DATA THROWN AWAY?" + " - PVDirector a change which is ignored ");
             return;
+        }
         
         // Calculate new value
         T newValue = null;
@@ -317,7 +323,7 @@ public class PVDirector<T> {
                     // Proceed with notification only if PVReader was not garbage
                     // collected
                     if (pv != null) {
-                        
+
                         // Atomicity guaranteed by:
                         //  - all the modification on the PVReader
                         //    are done here, on the same thread where the listeners will be called.
@@ -339,6 +345,8 @@ public class PVDirector<T> {
                             if (notification.isNotificationNeeded()) {
                                 pv.setValue(notification.getNewValue());
                             } else if (pv.isLastExceptionToNotify() || pv.isReadConnectionToNotify()) {
+                                LOG.info("Ticket2162: " + pv.getName()
+                                        + " - PVDirector connected or exception event " + connected);
                                 pv.firePvValueChanged();
                             }
                         } else {

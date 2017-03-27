@@ -7,6 +7,10 @@ package org.epics.pvmanager;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.logging.log4j.Logger;
+
+import uk.ac.stfc.isis.ibex.logger.IsisLog;
+
 /**
  * An object representing the PVReader. It contains all elements that are common
  * to all PVs of all type. The payload is specified by the generic type,
@@ -22,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @param <T> the type of the PVReader.
  */
 class PVReaderImpl<T> implements PVReader<T> {
+    private static final Logger LOG = IsisLog.getLogger(PVReaderImpl.class);
 
     static <T> PVReaderImpl<T> implOf(PVReader<T> pvReader) {
         if (pvReader instanceof PVReaderImpl) {
@@ -90,20 +95,25 @@ class PVReaderImpl<T> implements PVReader<T> {
         int notificationMask = 0;
         PVReaderEvent<T> event;
         synchronized(lock) {
+            String pvaddress = this.name;
             if (connectionToNotify) {
                 notificationMask += PVReaderEvent.CONNECTION_MASK;
+                LOG.info("Ticket2162: " + pvaddress + " - PVReaderImpl connection");
             }
             if (valueToNotify) {
                 notificationMask += PVReaderEvent.VALUE_MASK;
+                LOG.info("Ticket2162: " + pvaddress + " - PVReaderImpl valueChange ");
             }
             if (exceptionToNotify) {
                 notificationMask += PVReaderEvent.EXCEPTION_MASK;
+                LOG.info("Ticket2162: " + pvaddress + " - PVReaderImpl exception ");
             }
             connectionToNotify = false;
             valueToNotify = false;
             exceptionToNotify = false;
             sentFirstEvent = true;
             event = new PVReaderEvent<>(notificationMask, readerForNotification);
+
         }
         
         for (PVReaderListener<T> listener : pvReaderListeners) {
