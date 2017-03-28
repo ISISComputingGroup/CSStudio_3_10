@@ -150,7 +150,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 	/**
 	 * Initial receive buffer size.
 	 */
-	private static final int INITIAL_RX_BUFFER_SIZE = 1024;
+    private static final int INITIAL_RX_BUFFER_SIZE = 1024;
 
 	/**
 	 * @param context
@@ -378,6 +378,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 		try
 		{
             LOG.info("Ticket2162: " + "unknown" + " - CATransport read");
+            LOG.info("Thread ID " + Thread.currentThread().getId());
 			int bufferFullCount = 0;
 			
 			while (!closed)
@@ -401,6 +402,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 						disableFlowControl();
 					break;
 				}
+                LOG.info("Ticket2162: " + "unknown" + " - In read bytes read " + bytesRead);
 				
 				// flow control check
 				if (socketBuffer.hasRemaining())
@@ -417,11 +419,13 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 					{
 						// enable flow control
 						if (!flowControlActive)
-                            LOG.info("Ticket2162: " + "unknown" + " - Flow control activates");
+                            LOG.info("Ticket2162: " + "unknown" + " - Buffer full Flow control activates");
 							enableFlowControl();
 					}
-					else
+                    else {
 						bufferFullCount++;
+                        LOG.info("Ticket2162: " + "unknown" + " - Buffer full " + bufferFullCount);
+                    }
 				}
 				
 				// prepare for reading
@@ -451,6 +455,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 			// are we reading the header
 			if (headerBuffer.hasRemaining())
 			{
+                LOG.info("Ticket2162: " + "buffer" + " - CATransport doing header");
 				// TODO can be optimized simply by wrapping...
 				readFromByteBuffer(socketBuffer, headerBuffer);
 				
@@ -491,6 +496,9 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 								"Received payload size (" + payloadSize + 
 								") is larger than configured maximum array size (" +
 								context.getMaxArrayBytes() + "), disconnecting...");
+                        LOG.info("Ticket2162: " + "buffer" + "Received payload size (" + payloadSize
+                                + ") is larger than configured maximum array size (" + context.getMaxArrayBytes()
+                                + "), disconnecting...");
 						close(true);
 						return;
 						
@@ -498,7 +506,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 					
 					final int PAGE_SIZE = 4096;
 					int newSize = Math.min(maxPayloadSize, (payloadSize & ~(PAGE_SIZE-1)) + PAGE_SIZE);
-
+					LOG.info("Ticket2162: " + "buffer" + " - CATransport resize to " + newSize);
 					receiveBuffer[1] = ByteBuffer.allocateDirect(newSize);
 					payloadBuffer = receiveBuffer[1];
 				}
@@ -517,6 +525,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 					headerBuffer.flip();
 
 					// handle response					
+                    LOG.info("Ticket2162: " + "unknown" + " - CATransport handle response");
 					responseHandler.handleResponse(socketAddress, this, receiveBuffer);
 				}
 				catch (Throwable th)
@@ -572,6 +581,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 	private static final void readFromByteBuffer(ByteBuffer srcBuffer, ByteBuffer destBuffer) {
 		int srcBufferPosition = srcBuffer.position();
 		int destPosition = destBuffer.position();
+        LOG.info("Ticket2162: " + "buffer" + " - CATransport srcBuffer.remaining" + srcBuffer.remaining());
 		int bytesToRead = Math.min(destBuffer.remaining(), srcBuffer.remaining());
                 ByteBuffer toCopy = srcBuffer.slice();
                 toCopy.limit(bytesToRead);
