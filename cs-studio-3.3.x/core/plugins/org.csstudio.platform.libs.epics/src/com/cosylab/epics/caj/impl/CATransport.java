@@ -387,6 +387,9 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 				socketBuffer.clear();
 				
 				// read
+                LOG.info("Ticket2162: " + "buffer" + " - CATransport bytes to be read "
+                        + channel.socket().getInputStream().available());
+
 				int bytesRead = channel.read(socketBuffer);
 				if (bytesRead < 0)
 				{
@@ -447,6 +450,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 	protected void processRead(ByteBuffer socketBuffer)
 	{
         LOG.info("Ticket2162: " + "unknown" + " - CATransport processRead start");
+        // logger.log(Level.INFO, "info level log");
 		while (true)
 		{
 			final ByteBuffer headerBuffer = receiveBuffer[0];
@@ -602,6 +606,9 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 	 */
 	protected void disableFlowControl()
 	{
+        logger.log(Level.SEVERE, "Disable Flow control");
+        LOG.info("Disable Flow control");
+        LOG.info("Ticket2162: " + "buffer" + " - CATransport Disable Flow control");
 		try {
 			new EventsOnRequest(this).submit();
 			flowControlActive = false;
@@ -617,6 +624,8 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 	 */
 	protected void enableFlowControl()
 	{
+        logger.log(Level.SEVERE, "Enable Flow control");
+        LOG.info("Ticket2162: " + "buffer" + " - CATransport Enable Flow control");
 		try {
 			new EventsOffRequest(this).submit();
 			flowControlActive = true;
@@ -634,7 +643,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 	 * @throws IOException 
 	 */
 	public void send(ByteBuffer buffer, boolean asyncCloseOnError) throws IOException
-	{
+    {
 		sendLock.lock();
 		try
 		{
@@ -655,6 +664,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 	// TODO optimize !!!
 	private void noSyncSend(ByteBuffer buffer, boolean asyncCloseOnError) throws IOException
 	{
+        LOG.info("Ticket2162: " + "buffer" + " - CATransport send message");
 		try
 		{
 			// prepare buffer
@@ -694,6 +704,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 						if (tries >= TRIES)
 						{
 							context.getLogger().warning("Failed to send message to " + socketAddress + " - buffer full, will retry.");
+                            LOG.info("Ticket2162: " + "buffer" + " - CATransport buffer full");
 
 							//if (tries >= 2*TRIES)
 							//	throw new IOException("TCP send buffer persistently full, disconnecting!");
@@ -869,6 +880,9 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 	@Override
     public void submit(Request requestMessage) throws IOException {
 		ByteBuffer message = requestMessage.getRequestMessage();
+
+        LOG.info("Ticket2162: " + "buffer" + " - CATransport submit message to send buffer "
+                + requestMessage.toString());
 			
 		// empty message
 		if (message.capacity() == 0)
@@ -913,6 +927,7 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 				
 				// TODO !!! check message size, it can exceed sendBuffer capacity
                                 try {
+                    LOG.info("Ticket2162: " + "buffer" + " - CATransport Add message to send buffer");
 					sendBuffer.put(message);
                                 } catch(BufferOverflowException ex) {
                                 	throw new RuntimeException("Message exceeds write buffer size (com.cosylab.epics.caj.impl.CachedByteBufferAllocator.buffer_size)", ex);

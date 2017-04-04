@@ -14,6 +14,7 @@
 
 package com.cosylab.epics.caj.impl.requests;
 
+import com.cosylab.epics.caj.impl.CATransport;
 import com.cosylab.epics.caj.impl.Request;
 import com.cosylab.epics.caj.impl.Transport;
 
@@ -39,12 +40,16 @@ public class EchoRequest extends AbstractCARequest {
 			requestMessage = insertCAHeader(transport, null,
 											(short)0, (short)0, (short)0, transport.getMinorRevision(),
 											0, 0);
+        for (String owner : ((CATransport) transport).getChannelOwners()) {
+            LOG.info("Ticket2162: " + owner + " - EchoRequest Echo request created");
+        }
 	}
 
 	/**
 	 * @see com.cosylab.epics.caj.impl.Request#getPriority()
 	 */
-	public byte getPriority() {
+	@Override
+    public byte getPriority() {
 		return Request.SEND_IMMEDIATELY_PRIORITY;
 	}
 

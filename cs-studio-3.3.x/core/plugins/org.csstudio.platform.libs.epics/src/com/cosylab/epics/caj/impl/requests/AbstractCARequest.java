@@ -21,11 +21,14 @@ import com.cosylab.epics.caj.impl.CAConstants;
 import com.cosylab.epics.caj.impl.Request;
 import com.cosylab.epics.caj.impl.Transport;
 
+import uk.ac.stfc.isis.ibex.logger.IsisLog;
+
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $id$
  */
 public abstract class AbstractCARequest implements Request {
+    protected static final org.apache.logging.log4j.Logger LOG = IsisLog.getLogger(AbstractCARequest.class);
 
 	/**
 	 * Empty (dummy) message.
@@ -53,14 +56,16 @@ public abstract class AbstractCARequest implements Request {
 	 * Return default priority.
 	 * @see com.cosylab.epics.caj.impl.Request#getPriority()
 	 */
-	public byte getPriority() {
+	@Override
+    public byte getPriority() {
 		return Request.DEFAULT_USER_PRIORITY;
 	}
 
 	/**
 	 * @see com.cosylab.epics.caj.impl.Request#getRequestMessage()
 	 */
-	public ByteBuffer getRequestMessage()
+	@Override
+    public ByteBuffer getRequestMessage()
 	{
 		if (requestMessage == null)
 			requestMessage = generateRequestMessage();
@@ -83,7 +88,8 @@ public abstract class AbstractCARequest implements Request {
 	 * Submit request to the corresponding transport. 
 	 * @see com.cosylab.epics.caj.impl.Request#submit()
 	 */
-	public void submit() throws IOException
+	@Override
+    public void submit() throws IOException
 	{
 		transport.submit(this);
 	}

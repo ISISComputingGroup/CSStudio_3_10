@@ -14,12 +14,6 @@
 
 package com.cosylab.epics.caj.impl.requests;
 
-import gov.aps.jca.CAStatus;
-import gov.aps.jca.dbr.DBR;
-import gov.aps.jca.dbr.DBRType;
-import gov.aps.jca.event.ContextExceptionEvent;
-import gov.aps.jca.event.MonitorEvent;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -32,12 +26,21 @@ import com.cosylab.epics.caj.impl.NotifyResponseRequest;
 import com.cosylab.epics.caj.impl.Request;
 import com.cosylab.epics.caj.impl.Transport;
 
+import gov.aps.jca.CAStatus;
+import gov.aps.jca.dbr.DBR;
+import gov.aps.jca.dbr.DBRType;
+import gov.aps.jca.event.ContextExceptionEvent;
+import gov.aps.jca.event.MonitorEvent;
+import uk.ac.stfc.isis.ibex.logger.IsisLog;
+
 /**
  * CA event add request (creates a monitor on channel).
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $id$
  */
 public class EventAddRequest extends AbstractCARequest implements NotifyResponseRequest {
+
+    private static final org.apache.logging.log4j.Logger LOG = IsisLog.getLogger(EventAddRequest.class);
 
 	/**
 	 * Context.
@@ -147,7 +150,8 @@ public class EventAddRequest extends AbstractCARequest implements NotifyResponse
 	 * This methods checks for <code>null</code> transport since it is allowed.
 	 * @see com.cosylab.epics.caj.impl.requests.AbstractCARequest#submit()
 	 */
-	public void submit() throws IOException
+	@Override
+    public void submit() throws IOException
 	{
 		if (transport == null)
 			return;
@@ -162,6 +166,8 @@ public class EventAddRequest extends AbstractCARequest implements NotifyResponse
 	 */
 	public void resubscribeSubscription(Transport transport) throws IOException
 	{
+
+        LOG.info("Ticket2162: " + channel.getName() + " - CATransport resubscribe subscriptions request");
 		this.transport = transport;
 		// update channel sid
 		requestMessage.putInt(8, channel.getServerChannelID());
@@ -173,7 +179,8 @@ public class EventAddRequest extends AbstractCARequest implements NotifyResponse
 	/**
 	 * @see com.cosylab.epics.caj.impl.ResponseRequest#getIOID()
 	 */
-	public int getIOID() {
+	@Override
+    public int getIOID() {
 		return subsid;
 	}
 
@@ -181,7 +188,8 @@ public class EventAddRequest extends AbstractCARequest implements NotifyResponse
 	 * Called everytime on monitor changed event.
 	 * @see com.cosylab.epics.caj.impl.NotifyResponseRequest#response(int, short, int, java.nio.ByteBuffer)
 	 */
-	public void response(
+	@Override
+    public void response(
 		int status,
 		short dataType,
 		int dataCount,
@@ -219,7 +227,8 @@ public class EventAddRequest extends AbstractCARequest implements NotifyResponse
 	/**
 	 * @see com.cosylab.epics.caj.impl.ResponseRequest#cancel()
 	 */
-	public synchronized void cancel() {
+	@Override
+    public synchronized void cancel() {
 		context.unregisterResponseRequest(this);
 		channel.unregisterResponseRequest(this);
 	}
@@ -227,7 +236,8 @@ public class EventAddRequest extends AbstractCARequest implements NotifyResponse
 	/**
 	 * @see com.cosylab.epics.caj.impl.ResponseRequest#timeout()
 	 */
-	public void timeout() {
+	@Override
+    public void timeout() {
 		cancel();
 		// ... and notify
 		context.getEventDispatcher().dispatch(
@@ -239,7 +249,8 @@ public class EventAddRequest extends AbstractCARequest implements NotifyResponse
 	/**
 	 * @see com.cosylab.epics.caj.impl.ResponseRequest#exception(int, java.lang.String)
 	 */
-	public void exception(int errorCode, String errorMessage) {
+	@Override
+    public void exception(int errorCode, String errorMessage) {
 		CAStatus status = CAStatus.forStatusCode(errorCode);
 		
 		// destroy only on channel destroy
@@ -279,7 +290,8 @@ public class EventAddRequest extends AbstractCARequest implements NotifyResponse
 	/**
 	 * @see com.cosylab.epics.caj.impl.Request#getPriority()
 	 */
-	public byte getPriority() {
+	@Override
+    public byte getPriority() {
 		return priority;
 	}
 	

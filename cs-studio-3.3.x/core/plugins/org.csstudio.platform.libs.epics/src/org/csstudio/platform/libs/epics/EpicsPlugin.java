@@ -21,8 +21,6 @@
  */
 package org.csstudio.platform.libs.epics;
 
-import gov.aps.jca.jni.JNITargetArch;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +31,8 @@ import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.framework.BundleContext;
+
+import gov.aps.jca.jni.JNITargetArch;
 
 /** The main plugin class to be used in the desktop.
  *  @author Original author unknown
@@ -90,10 +90,11 @@ public class EpicsPlugin extends Plugin
     }
 
     /** @return Logger for plugin ID */
-    private Logger getLogger()
+    public Logger getLogger()
     {
         return Logger.getLogger(ID);
     }
+
 
     /** Set static plugin via static function to avoid FindBugs warning
      *  about access to static var from non-static code

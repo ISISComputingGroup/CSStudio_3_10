@@ -142,10 +142,11 @@ public class CAResponseHandler implements ResponseHandler {
 		}
 		
         List<String> channelOwners = transport.getChannelOwners();
-        if (channelOwners != null && (commandID == 18 || commandID == 23)) {
+        if (channelOwners != null && (commandID == 18 || commandID == 23 || commandID == 1)) {
 
             for (String owner : channelOwners) {
-                LOG.info("Ticket2162: " + owner + " - CAResponseHandler id (18 is connection, 23 response) "
+                LOG.info("Ticket2162: " + owner
+                        + " - CAResponseHandler id (18 is connection, 23 response, 1 reconnect) "
                         + commandID);
             }
         }
