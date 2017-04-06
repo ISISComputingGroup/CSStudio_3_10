@@ -142,7 +142,7 @@ public class CAResponseHandler implements ResponseHandler {
 		}
 		
         List<String> channelOwners = transport.getChannelOwners();
-        if (channelOwners != null && (commandID == 18 || commandID == 23 || commandID == 1)) {
+        if (channelOwners != null) {
 
             for (String owner : channelOwners) {
                 LOG.info("Ticket2162: " + owner

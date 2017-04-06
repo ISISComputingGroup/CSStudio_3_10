@@ -16,7 +16,6 @@ package com.cosylab.epics.caj.impl;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import com.cosylab.epics.caj.CAJChannel;
@@ -24,6 +23,8 @@ import com.cosylab.epics.caj.CAJContext;
 import com.cosylab.epics.caj.impl.requests.VersionRequest;
 import com.cosylab.epics.caj.util.ArrayFIFO;
 import com.cosylab.epics.caj.util.Timer;
+
+import uk.ac.stfc.isis.ibex.logger.IsisLog;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
@@ -35,6 +36,7 @@ public class ChannelSearchManager {
 	 * Max search tries per frame.
 	 */
 	private static final int MAX_FRAMES_PER_TRY = 64;
+    private static final org.apache.logging.log4j.Logger LOG = IsisLog.getLogger(ChannelSearchManager.class);
 
 	private class SearchTimer implements Timer.TimerRunnable
 	{
@@ -150,7 +152,8 @@ public class ChannelSearchManager {
 		{
 			if (canceled)
 				return;
-
+            LOG.info("Ticket2162: " + channel.getName()
+                    + " - ChannelSearchManager Moved channel search to timer with delay " + period());
 			synchronized (requestPendingChannels)
 			{
 				boolean startImmediately = requestPendingChannels.isEmpty();
@@ -202,7 +205,8 @@ public class ChannelSearchManager {
 		 * Called when timer expired.
 		 * @param timeoutTime expiration time.
 		 */
-		public void timeout(long timeoutTime)
+		@Override
+        public void timeout(long timeoutTime)
 		{
 
 			if (canceled)
@@ -309,6 +313,8 @@ public class ChannelSearchManager {
 					// and add it to response list not to cause dead-loops
 					channel.addAndSetListOwnership(responsePendingChannels, timerIndex);
 					// do not report any error
+                    LOG.info("Ticket2162: " + channel.getName() + " - could not generate search request "
+                            + th.getLocalizedMessage());
 					break;
 				}
 				if (frameWasSent) {
@@ -324,6 +330,7 @@ public class ChannelSearchManager {
 				else
 					triesInFrame++;
 
+                LOG.info("Ticket2162: " + channel.getName() + " - ChannelSearchManager request sent? " + requestSent);
 				if (requestSent) {
 					channel.addAndSetListOwnership(responsePendingChannels, timerIndex);
 					if (searchAttempts < Integer.MAX_VALUE)
@@ -357,6 +364,16 @@ public class ChannelSearchManager {
 					boolean someWorkToDo = (!requestPendingChannels.isEmpty() || !responsePendingChannels.isEmpty());
 					if (someWorkToDo)
 						timerTaskID = context.getTimer().executeAfterDelay(period(), this);
+                    else {
+                        // log this because maybe this is why this is not
+                        // sorted. It may be that responsePendingChannels which
+                        // is not
+                        // sychnorised is added to after the timer is meant to
+                        // start??
+                        LOG.info("Ticket2162: " + "all"
+                                + " - ChannelSearchManager no work to do not restarting timer. period" + period());
+
+                    }
 				}
 			}
 
@@ -590,6 +607,7 @@ public class ChannelSearchManager {
 	 */
 	private synchronized void flushSendBuffer()
 	{
+        LOG.info("Ticket2162: " + "unknown" + " - ChannelSearchManager flush serach requests send buffer");
 		timeAtLastSend = System.currentTimeMillis();
 		context.getBroadcastTransport().send(sendBuffer);
 		initializeSendBuffer();
@@ -695,7 +713,7 @@ public class ChannelSearchManager {
 	public void beaconAnomalyNotify()
 	{
 //System.out.println("[*] beaconAnomaly");
-		
+        LOG.info("Ticket2162: " + "all" + " - ChannelSearchManager Beacon annomly detected boost");
 		for (int i = beaconAnomalyTimerIndex + 1; i < timers.length; i++)
 			timers[i].moveChannels(timers[beaconAnomalyTimerIndex]);
 	}

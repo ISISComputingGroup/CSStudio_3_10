@@ -45,6 +45,7 @@ public class SearchRequest extends AbstractCARequest {
 	public static final ByteBuffer generateSearchRequestMessage(Transport transport, ByteBuffer requestMessage,
 			String name, int cid)
 	{
+        LOG.info("Ticket2162: " + name + " - Search requests generate search request");
 		if (name.length() > Math.min(CAConstants.MAX_UDP_SEND - CAConstants.CA_MESSAGE_HEADER_SIZE, 0xFFFF))
 			throw new IllegalArgumentException("name too long");
 

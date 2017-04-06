@@ -995,8 +995,12 @@ public class CATransport implements Transport, ReactorHandler, Timer.TimerRunnab
 	/**
 	 * Beacon arrival.
 	 */
-	public void beaconArrivalNotify()
+    public void beaconArrivalNotify()
 	{
+	    for (String owner: getChannelOwners()) {
+            LOG.info("Ticket2162: " + owner
+                    + " - CATransport beacon arrived");
+        }
 		if (!probeResponsePending)
 			rescheduleTimer(connectionTimeout);
 	}

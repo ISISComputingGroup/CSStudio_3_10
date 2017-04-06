@@ -503,6 +503,7 @@ public class CAJChannel extends Channel implements TransportClient {
 	 */
 	public synchronized boolean generateSearchRequestMessage(Transport transport, ByteBuffer buffer)
 	{
+        LOG.info("Ticket2162: " + name + " - CAJChannel generate search request ");
 		ByteBuffer result = SearchRequest.generateSearchRequestMessage(transport, buffer, name, channelID);
 		if (result == null)
 			return false;
