@@ -13,7 +13,7 @@ The change is in com\cosylab\epics\caj\impl\handlers\SearchResponse.java
 Build CAJ (and JCA but that doesn't matter):
 
 * Run build_caj_and_jca.bat - this creates a local P2 site with a CAJ in it.
-* Use 7-zip to extract com\cosylab\epics\caj\impl\handlers\SearchResponse.class to somewhere
+* Use 7-zip to extract com\cosylab\epics\caj\impl\handlers\SearchResponse.class to somewhere (location is at the end of the build you just did)
 
 Build CS-Studio:
 
