@@ -54,7 +54,7 @@
     P2 REPOSITORIES
   -->
   <repositories>
-    <repository>
+    <!-- <repository>
       <id>csstudio-thirdparty</id>
       <url>http://download.controlsystemstudio.org/thirdparty/3.3</url>
       <layout>p2</layout>
@@ -63,7 +63,7 @@
       <id>csstudio-maven-osgi-bundles</id>
       <url>http://download.controlsystemstudio.org/maven-osgi-bundles/3.3</url>
       <layout>p2</layout>
-    </repository>
+    </repository>-->
     <repository>
       <id>indigo</id>
       <url>http://download.eclipse.org/releases/indigo</url>
@@ -148,12 +148,8 @@
             </dependency>
           </dependencies>
           <configuration>
-            <timestampProvider>jgit</timestampProvider>
-            <!-- jgit.dirtyWorkingTree options: ignore, warning, error -->
-            <jgit.dirtyWorkingTree>${jgit.dirtyWorkingTree}</jgit.dirtyWorkingTree>
-            <jgit.ignore>
-              pom.xml
-            </jgit.ignore>
+            <strictBinIncludes>false</strictBinIncludes>
+            <format>yyyyMMdd-HHmm</format>
           </configuration>
         </plugin>
         <plugin>

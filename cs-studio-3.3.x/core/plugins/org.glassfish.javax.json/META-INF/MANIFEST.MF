@@ -10,7 +10,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JSR 353 (JSON Processing) Default Provider
 Bundle-SymbolicName: org.glassfish.javax.json
 Bundle-Vendor: Oracle
-Bundle-Version: 1.0.4
+Bundle-Version: 1.0.4.qualifier
 Created-By: Apache Maven Bundle Plugin
 Export-Package: javax.json;uses:="javax.json.stream,javax.json.spi";vers
  ion="1.0",javax.json.stream;uses:="javax.json";version="1.0",javax.json
